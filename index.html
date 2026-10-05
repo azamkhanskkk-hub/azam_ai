@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZAM AI</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#04090d;color:#e9fffb;font-family:Arial,sans-serif}
+header{height:70px;border-bottom:1px solid #17313a;display:flex;align-items:center;padding:0 22px;font-weight:800;letter-spacing:3px}
+.logo{width:40px;height:40px;border:1px solid #39f6e0;border-radius:12px;display:grid;place-items:center;color:#39f6e0;margin-right:12px}
+main{max-width:850px;margin:auto;padding:18px}.hero{text-align:center;padding:30px 10px}.hero h1{letter-spacing:4px}
+.core{width:230px;height:230px;border-radius:50%;margin:20px auto 55px;border:1px solid #39f6e0;display:grid;place-items:center;box-shadow:0 0 45px #0b6f6b;position:relative}
+.core:after{content:"";position:absolute;inset:25px;border:1px dashed #39f6e0;border-radius:50%;animation:spin 8s linear infinite}
+.orb{width:105px;height:105px;border-radius:50%;background:radial-gradient(circle,#fff,#39f6e0 8%,#08706c 35%,transparent 70%);box-shadow:0 0 35px #39f6e0;animation:pulse 2s infinite}
+.active{color:#39f6e0;font-weight:bold;letter-spacing:2px}.status{color:#7dff9b;font-size:12px}
+.panel{border:1px solid #17313a;border-radius:14px;background:#081117;overflow:hidden}
+.messages{height:330px;overflow:auto;padding:14px}.msg{padding:11px 13px;border-radius:10px;margin:8px 0;max-width:85%;line-height:1.5}
+.ai{background:#0b1c21}.user{background:#10382f;margin-left:auto}
+.bar{display:flex;gap:8px;padding:12px;border-top:1px solid #17313a}.bar input{flex:1;background:#050b10;border:1px solid #17313a;color:white;border-radius:10px;padding:13px;outline:none}
+.bar button{background:#0d3939;color:#39f6e0;border:1px solid #277b7b;border-radius:10px;padding:0 18px;cursor:pointer}
+.note{color:#78949a;text-align:center;font-size:12px;margin:18px}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08)}}
+</style>
+</head>
+<body>
+<header><div class="logo">A</div>AZAM AI</header>
+<main>
+<div class="hero"><h1>AZAM AI</h1><div class="status">● SYSTEM ONLINE</div>
+<div class="core"><div class="orb"></div></div>
+<div class="active">CORE ACTIVE</div><div style="color:#78949a;margin-top:8px">AI PROCESSING READY</div></div>
+<div class="panel">
+<div id="messages" class="messages"><div class="msg ai">AZAM AI online. Ask me anything.</div></div>
+<div class="bar"><input id="input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')send()"><button onclick="send()">SEND</button></div>
+</div>
+<div class="note">Real AI mode • Keep your API key on the server, never in this page.</div>
+</main>
+<script>
+async function send(){
+ const input=document.getElementById("input"), text=input.value.trim(); if(!text)return;
+ const box=document.getElementById("messages");
+ const u=document.createElement("div"); u.className="msg user"; u.textContent=text; box.appendChild(u);
+ input.value="";
+ const loading=document.createElement("div"); loading.className="msg ai"; loading.textContent="Thinking..."; box.appendChild(loading);
+ box.scrollTop=box.scrollHeight;
+ try{
+   const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text})});
+   const d=await r.json(); loading.textContent=d.reply||d.error||"No response.";
+ }catch(e){loading.textContent="Could not connect to AZAM AI server."}
+ box.scrollTop=box.scrollHeight;
+}
+</script>
+</body></html>
