@@ -726,7 +726,9 @@ scrollBottom();
 
 try{
 
-const r=await fetch("/api/chat",{
+const r=await fetch(
+  image && text ? "/api/edit-image" : "/api/chat",
+  {
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -738,7 +740,14 @@ image:image
 });
 
 const d=await r.json();
-
+if (d.image) {
+  const img=document.createElement("img");
+  img.src="data:image/png;base64,"+d.image;
+  img.style.maxWidth="100%";
+  img.style.borderRadius="14px";
+  img.style.marginTop="8px";
+  chatBox.appendChild(img);
+  }
 loading.remove();
 
 const reply=d.reply||"No response generated.";
