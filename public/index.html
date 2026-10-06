@@ -677,7 +677,13 @@ async function send(){
 
 const text=input.value.trim();
 
-if(!text)return;
+if(!text && !selectedImage)return;
+
+const image=selectedImage;
+
+input.value="";
+selectedImage=null;
+input.placeholder="Message MASTER AI...";
 
 input.value="";
 
@@ -704,7 +710,8 @@ headers:{
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-message:text
+message:text,
+image:image
 })
 });
 
@@ -871,72 +878,25 @@ window.speechSynthesis.speak(voice);
 
 }
 
-async function fileSelected(inputElement){
+function fileSelected(inputElement){
 
 const file=inputElement.files[0];
 
 if(!file)return;
 
 if(!file.type.startsWith("image/")){
-
-alert("Abhi photo upload active hai. Video aur documents next backend update mein activate karenge.");
-
+alert("Abhi sirf photos supported hain.");
 inputElement.value="";
-
 return;
-
 }
 
 const reader=new FileReader();
 
-reader.onload=async function(){
+reader.onload=function(){
 
-const image=reader.result;
+selectedImage=reader.result;
 
-addMessage("user","📷 Photo: "+file.name);
-
-const loading=document.createElement("div");
-loading.className="message ai";
-
-const bubble=document.createElement("div");
-bubble.className="bubble typing";
-bubble.textContent="Photo dekh raha hoon...";
-
-loading.appendChild(bubble);
-chatBox.appendChild(loading);
-
-scrollBottom();
-
-try{
-
-const r=await fetch("/api/chat",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-message:"Is photo ko dekho aur mujhe batao is mein kya hai.",
-image:image
-})
-});
-
-const d=await r.json();
-
-loading.remove();
-
-const reply=d.reply||"Photo samajh nahi saki.";
-
-addMessage("ai",reply);
-
-speak(reply);
-
-}catch(e){
-
-loading.remove();
-
-addMessage("ai","Photo process nahi ho saki.");
-
-}
+input.placeholder="Photo ke baare mein kya karna hai?";
 
 };
 
@@ -944,7 +904,7 @@ reader.readAsDataURL(file);
 
 inputElement.value="";
 
-}
+ }
 
 input.addEventListener("keydown",function(e){
 
