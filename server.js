@@ -48,8 +48,8 @@ app.post("/api/edit-image", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      error: "Image editing failed."
-    });
+  error: error.message || "Image editing failed."
+});
   }
 });
 // Simple memory for each browser session
