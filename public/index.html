@@ -29,7 +29,11 @@ main{max-width:850px;margin:auto;padding:18px}.hero{text-align:center;padding:30
 <div class="active">CORE ACTIVE</div><div style="color:#78949a;margin-top:8px">AI PROCESSING READY</div></div>
 <div class="panel">
 <div id="messages" class="messages"><div class="msg ai">AZAM AI online. Ask me anything.</div></div>
-<div class="bar"><input id="input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')send()"><button onclick="send()">SEND</button></div>
+<div class="bar">
+<input id="input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')send()">
+<button onclick="startVoice()">🎤</button>
+<button onclick="send()">SEND</button>
+</div>
 </div>
 <div class="note">Real AI mode • Keep your API key on the server, never in this page.</div>
 </main>
@@ -43,9 +47,44 @@ async function send(){
  box.scrollTop=box.scrollHeight;
  try{
    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text})});
-   const d=await r.json(); loading.textContent=d.reply||d.error||"No response.";
+   const d=await r.json(); loading.textContent=d.reply||"No response.";
+speak(d.reply);
  }catch(e){loading.textContent="Could not connect to AZAM AI server."}
  box.scrollTop=box.scrollHeight;
 }
+ function startVoice(){
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice input is not supported on this browser.");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+
+  recognition.onresult = function(event) {
+    document.getElementById("input").value =
+      event.results[0][0].transcript;
+    send();
+  };
+
+  recognition.start();
+ }
+ function speak(text){
+  if (!("speechSynthesis" in window)) return;
+
+  window.speechSynthesis.cancel();
+
+  const voice = new SpeechSynthesisUtterance(text);
+  voice.lang = "en-US";
+  voice.rate = 1;
+  voice.pitch = 1;
+  voice.volume = 1;
+
+  window.speechSynthesis.speak(voice);
+ }
 </script>
 </body></html>
