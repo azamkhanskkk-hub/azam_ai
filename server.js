@@ -1,5 +1,5 @@
 const express = require("express");
-const OpenAI = require("openai");
+ const { OpenAI, toFile } = require("openai");
 const path = require("path");
 const fs = require("fs");
 
@@ -10,7 +10,48 @@ const client = new OpenAI({
 
 app.use(express.json({ limit: "20mb" }));
 app.use(express.static(path.join(__dirname, "public")));
+app.post("/api/edit-image", async (req, res) => {
+  try {
+    const { image, prompt } = req.body;
 
+    if (!image || !prompt) {
+      return res.status(400).json({
+        error: "Image aur prompt dono required hain."
+      });
+    }
+
+    const match = image.match(/^data:(image\/[^;]+);base64,(.+)$/);
+
+    if (!match) {
+      return res.status(400).json({
+        error: "Invalid image format."
+      });
+    }
+
+    const imageFile = await toFile(
+      Buffer.from(match[2], "base64"),
+      "input-image",
+      { type: match[1] }
+    );
+
+    const result = await client.images.edit({
+      model: "gpt-image-2",
+      image: imageFile,
+      prompt: prompt
+    });
+
+    res.json({
+      image: result.data[0].b64_json
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Image editing failed."
+    });
+  }
+});
 // Simple memory for each browser session
 const memory = {};
 
