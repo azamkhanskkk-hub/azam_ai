@@ -623,7 +623,16 @@ if(role==="ai"){
 
 const actions=document.createElement("div");
 actions.className="message-actions";
+const listen=document.createElement("button");
+listen.textContent="🔊 Listen";
 
+listen.onclick=()=>{
+  const voice=new SpeechSynthesisUtterance(text);
+  voice.lang="ur-PK";
+  speechSynthesis.speak(voice);
+};
+
+actions.appendChild(listen);
 const copy=document.createElement("button");
 copy.textContent="Copy";
 copy.onclick=()=>navigator.clipboard?.writeText(text);
