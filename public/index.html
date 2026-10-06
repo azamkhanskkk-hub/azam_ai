@@ -62,7 +62,7 @@ speak(d.reply);
   }
 
   const recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
+  recognition.lang = "ur-PK";
   recognition.interimResults = false;
 
   recognition.onresult = function(event) {
@@ -79,7 +79,7 @@ speak(d.reply);
   window.speechSynthesis.cancel();
 
   const voice = new SpeechSynthesisUtterance(text);
-  voice.lang = "en-US";
+  voice.lang = "ur-PK";
   voice.rate = 1;
   voice.pitch = 1;
   voice.volume = 1;
