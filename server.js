@@ -8,7 +8,7 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-app.use(express.json({ limit: "20mb" }));
+app.use(express.json({ limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.post("/api/edit-image", async (req, res) => {
   try {
