@@ -755,7 +755,7 @@ if (d.image) {
   return;
 }
 
-const reply=d.reply||"No response generated.";
+const reply=d.reply||d.error||"No response generated.";
 addMessage("ai",reply);
 
 
