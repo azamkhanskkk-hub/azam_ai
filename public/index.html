@@ -750,8 +750,11 @@ if (d.image) {
   }
 loading.remove();
 
-const reply=d.reply||"No response generated.";
+if (d.image) {
+  return;
+}
 
+const reply=d.reply||"No response generated.";
 addMessage("ai",reply);
 
 
