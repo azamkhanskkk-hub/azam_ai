@@ -47,6 +47,52 @@ cursor:pointer;
 .bar button{background:#0d3939;color:#39f6e0;border:1px solid #277b7b;border-radius:10px;padding:0 18px;cursor:pointer}
 .note{color:#78949a;text-align:center;font-size:12px;margin:18px}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08)}}
+html,body{
+width:100%;
+height:100%;
+margin:0;
+overflow:hidden;
+}
+
+body{
+background:#04090d;
+}
+
+header{
+height:56px;
+}
+
+main{
+width:100%;
+height:calc(100vh - 56px);
+margin:0;
+padding:0;
+}
+
+.hero{
+display:none;
+}
+
+.panel{
+width:100%;
+height:100%;
+margin:0;
+border:0;
+border-radius:0;
+display:flex;
+flex-direction:column;
+}
+
+.messages{
+flex:1;
+height:auto;
+overflow-y:auto;
+padding:14px;
+}
+
+.bar{
+flex-shrink:0;
+ }
 </style>
 </head>
 <body>
@@ -163,7 +209,7 @@ function startVoice(){
   voice.volume = 1;
 
   voice.onend = function(){
-    waitingForReply = false;
+    waitconstingForReply = false;
 
     if(voiceMode){
       setTimeout(() => startVoice(), 300);
@@ -172,26 +218,59 @@ function startVoice(){
 
   window.speechSynthesis.speak(voice);
  }
- function fileSelected(input){
+ async function fileSelected(input){
   const file = input.files[0];
 
   if(!file) return;
 
-  const box = document.getElementById("messages");
-
-  const msg = document.createElement("div");
-  msg.className = "msg user";
-
-  if(file.type.startsWith("image/")){
-    msg.textContent = "📷 Photo selected: " + file.name;
-  }else if(file.type.startsWith("video/")){
-    msg.textContent = "🎥 Video selected: " + file.name;
-  }else{
-    msg.textContent = "📁 File selected: " + file.name;
+  if(!file.type.startsWith("image/")){
+    alert("Abhi AZAM AI mein photo upload active hai. Video aur files next step mein add karenge.");
+    input.value = "";
+    return;
   }
 
-  box.appendChild(msg);
-  box.scrollTop = box.scrollHeight;
+  const reader = new FileReader();
+
+  reader.onload = async function(){
+    const image = reader.result;
+    const box = document.getElementById("messages");
+
+    const u = document.createElement("div");
+    u.className = "msg user";
+    u.textContent = "📷 Photo: " + file.name;
+    box.appendChild(u);
+
+    const loading = document.createElement("div");
+    loading.className = "msg ai";
+    loading.textContent = "Photo dekh raha hoon...";
+    box.appendChild(loading);
+
+    box.scrollTop = box.scrollHeight;
+
+    try{
+      const r = await fetch("/api/chat", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          message:"Is photo ko dekho aur mujhe batao is mein kya hai.",
+          image:image
+        })
+      });
+
+      const d = await r.json();
+      loading.textContent = d.reply || "No response.";
+
+      speak(d.reply);
+
+    }catch(e){
+      loading.textContent = "Photo process nahi ho saki.";
+    }
+
+    box.scrollTop = box.scrollHeight;
+  };
+
+  reader.readAsDataURL(file);
+  input.value = "";
 }
 </script>
 </body></html>
