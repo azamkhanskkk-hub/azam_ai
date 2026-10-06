@@ -2,36 +2,7 @@ const express = require("express");
 const OpenAI = require("openai");
 const path = require("path");
 const fs = require("fs");
-app.post("/api/edit-image", async (req, res) => {
-  try {
-    const { image, prompt } = req.body;
 
-    if (!image || !prompt) {
-      return res.status(400).json({
-        error: "Image aur prompt dono required hain."
-      });
-    }
-
-    const base64 = image.split(",")[1];
-
-    const result = await client.images.edit({
-      model: "gpt-image-2",
-      image: Buffer.from(base64, "base64"),
-      prompt: prompt
-    });
-
-    res.json({
-      image: result.data[0].b64_json
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Image edit failed."
-    });
-  }
-});
 const app = express();
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
