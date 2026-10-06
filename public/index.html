@@ -93,6 +93,76 @@ padding:14px;
 .bar{
 flex-shrink:0;
  }
+ .bar{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:64px;
+box-sizing:border-box;
+display:flex;
+align-items:center;
+gap:8px;
+padding:8px 12px;
+background:#04090d;
+border-top:1px solid #17313a;
+z-index:1000;
+}
+
+.bar input{
+flex:1;
+min-width:0;
+height:44px;
+box-sizing:border-box;
+padding:0 16px;
+border-radius:24px;
+border:1px solid #277b8b;
+background:#081217;
+color:#fff;
+font-size:15px;
+outline:none;
+}
+
+.bar button{
+border:0;
+background:transparent;
+color:#b9c8cc;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.plus-btn{
+font-size:28px;
+width:34px;
+height:44px;
+}
+
+.voice-btn{
+width:34px;
+height:44px;
+}
+
+.voice-btn svg{
+width:21px;
+height:21px;
+fill:none;
+stroke:#b9c8cc;
+stroke-width:1.8;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+
+.send-btn{
+width:38px;
+height:38px;
+border-radius:50% !important;
+background:#19d3c5 !important;
+color:#031014 !important;
+font-size:19px;
+font-weight:bold;
+       }
 </style>
 </head>
 <body>
@@ -105,7 +175,7 @@ flex-shrink:0;
 <div id="messages" class="messages"><div class="msg ai">AZAM AI online. Ask me anything.</div></div>
 <div class="bar">
 
-<button onclick="document.getElementById('fileInput').click()">＋</button>
+<button class="plus-btn" onclick="document.getElementById('fileInput').click()">＋</button>
 
 <input
 id="input"
@@ -113,9 +183,15 @@ placeholder="Message AZAM AI..."
 onkeydown="if(event.key==='Enter')send()"
 >
 
-<button onclick="startVoice()">🎤</button>
+<button class="voice-btn" onclick="startVoice()" aria-label="Voice">
+<svg viewBox="0 0 24 24">
+<path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"/>
+<path d="M19 11a7 7 0 0 1-14 0"/>
+<path d="M12 18v3"/>
+</svg>
+</button>
 
-<button onclick="send()">➤</button>
+<button class="send-btn" onclick="send()">➤</button>
 
 <input
 id="fileInput"
