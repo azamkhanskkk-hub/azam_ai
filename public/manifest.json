@@ -1,0 +1,9 @@
+{
+  "name": "MASTER AI",
+  "short_name": "MASTER AI",
+  "description": "MASTER AI - Your intelligent AI assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
