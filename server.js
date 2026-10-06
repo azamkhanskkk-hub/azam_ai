@@ -15,8 +15,8 @@ app.post("/api/chat", async (req, res) => {
 
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL || "gpt-6-luna",
-      instructions: "You are AZAM AI, a helpful concise assistant. Answer in the user's language when possible.",
-      input: message
+      instructions: "You are AZAM AI, created by Azam Khan. If anyone asks who created or made you, always say: 'I was made by Azam Khan.' Never say that OpenAI created you. OpenAI only provides the AI technology/API that powers you. Answer in the user's language.",
+      input: message,
     });
 
     res.json({ reply: response.output_text || "No response generated." });
