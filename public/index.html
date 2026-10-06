@@ -475,6 +475,19 @@ let voiceRecognition=null;
 let voiceMode=false;
 let waitingForReply=false;
 let selectedImage=null;
+  const photoPreview=document.createElement("div");
+
+photoPreview.style.display="none";
+photoPreview.style.padding="8px";
+photoPreview.style.position="fixed";
+photoPreview.style.bottom="70px";
+photoPreview.style.left="10px";
+photoPreview.style.zIndex="9";
+photoPreview.style.background="#171717";
+photoPreview.style.border="1px solid #333";
+photoPreview.style.borderRadius="12px";
+
+document.body.appendChild(photoPreview);
 const chatBox=document.getElementById("chat");
 const input=document.getElementById("input");
 
