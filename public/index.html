@@ -15,7 +15,35 @@ main{max-width:850px;margin:auto;padding:18px}.hero{text-align:center;padding:30
 .panel{border:1px solid #17313a;border-radius:14px;background:#081117;overflow:hidden}
 .messages{height:330px;overflow:auto;padding:14px}.msg{padding:11px 13px;border-radius:10px;margin:8px 0;max-width:85%;line-height:1.5}
 .ai{background:#0b1c21}.user{background:#10382f;margin-left:auto}
-.bar{display:flex;gap:8px;padding:12px;border-top:1px solid #17313a}.bar input{flex:1;background:#050b10;border:1px solid #17313a;color:white;border-radius:10px;padding:13px;outline:none}
+..bar{
+display:flex;
+align-items:center;
+gap:6px;
+padding:8px;
+border-top:1px solid #17313a;
+}
+
+.bar input{
+flex:1;
+min-width:0;
+padding:12px;
+border-radius:22px;
+border:1px solid #277b8b;
+background:#050b10;
+color:#fff;
+outline:none;
+}
+
+.bar button{
+width:42px;
+height:42px;
+border-radius:50%;
+border:1px solid #277b8b;
+background:#0d3939;
+color:#39f6e0;
+font-size:18px;
+cursor:pointer;
+ }.bar input{flex:1;background:#050b10;border:1px solid #17313a;color:white;border-radius:10px;padding:13px;outline:none}
 .bar button{background:#0d3939;color:#39f6e0;border:1px solid #277b7b;border-radius:10px;padding:0 18px;cursor:pointer}
 .note{color:#78949a;text-align:center;font-size:12px;margin:18px}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08)}}
@@ -30,9 +58,27 @@ main{max-width:850px;margin:auto;padding:18px}.hero{text-align:center;padding:30
 <div class="panel">
 <div id="messages" class="messages"><div class="msg ai">AZAM AI online. Ask me anything.</div></div>
 <div class="bar">
-<input id="input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')send()">
+
+<button onclick="document.getElementById('fileInput').click()">＋</button>
+
+<input
+id="input"
+placeholder="Message AZAM AI..."
+onkeydown="if(event.key==='Enter')send()"
+>
+
 <button onclick="startVoice()">🎤</button>
-<button onclick="send()">SEND</button>
+
+<button onclick="send()">➤</button>
+
+<input
+id="fileInput"
+type="file"
+accept="image/*,video/*,.pdf,.txt,.doc,.docx"
+style="display:none"
+onchange="fileSelected(this)"
+>
+
 </div>
 </div>
 <div class="note">Real AI mode • Keep your API key on the server, never in this page.</div>
@@ -52,7 +98,11 @@ speak(d.reply);
  }catch(e){loading.textContent="Could not connect to AZAM AI server."}
  box.scrollTop=box.scrollHeight;
 }
- function startVoice(){
+ let voiceRecognition = null;
+let voiceMode = false;
+let waitingForReply = false;
+
+function startVoice(){
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -61,17 +111,45 @@ speak(d.reply);
     return;
   }
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = "ur-PK";
-  recognition.interimResults = false;
+  voiceMode = true;
 
-  recognition.onresult = function(event) {
-    document.getElementById("input").value =
-      event.results[0][0].transcript;
-    send();
+  if (voiceRecognition) {
+    try { voiceRecognition.stop(); } catch(e) {}
+  }
+
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.lang = "ur-PK";
+  voiceRecognition.continuous = true;
+  voiceRecognition.interimResults = false;
+
+  voiceRecognition.onresult = function(event){
+    let text = "";
+
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      if(event.results[i].isFinal){
+        text += event.results[i][0].transcript + " ";
+      }
+    }
+
+    text = text.trim();
+
+    if(text){
+      waitingForReply = true;
+
+      try { voiceRecognition.stop(); } catch(e) {}
+
+      document.getElementById("input").value = text;
+      send();
+    }
   };
 
-  recognition.start();
+  voiceRecognition.onend = function(){
+    if(voiceMode && !waitingForReply){
+      setTimeout(() => startVoice(), 300);
+    }
+  };
+
+  voiceRecognition.start();
  }
  function speak(text){
   if (!("speechSynthesis" in window)) return;
@@ -84,7 +162,36 @@ speak(d.reply);
   voice.pitch = 1;
   voice.volume = 1;
 
+  voice.onend = function(){
+    waitingForReply = false;
+
+    if(voiceMode){
+      setTimeout(() => startVoice(), 300);
+    }
+  };
+
   window.speechSynthesis.speak(voice);
  }
+ function fileSelected(input){
+  const file = input.files[0];
+
+  if(!file) return;
+
+  const box = document.getElementById("messages");
+
+  const msg = document.createElement("div");
+  msg.className = "msg user";
+
+  if(file.type.startsWith("image/")){
+    msg.textContent = "📷 Photo selected: " + file.name;
+  }else if(file.type.startsWith("video/")){
+    msg.textContent = "🎥 Video selected: " + file.name;
+  }else{
+    msg.textContent = "📁 File selected: " + file.name;
+  }
+
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+}
 </script>
 </body></html>
